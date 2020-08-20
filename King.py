@@ -39,7 +39,7 @@ class King():
 
 		self.walkAngles = {"right" : math.pi/2, "left" : -math.pi/2}
 
-		self.jumpAngles = {'up' : 0, 'left' : -math.pi/3.5, 'right' : math.pi/3.5}
+		self.jumpAngles = {'up' : 0, 'left' : -math.pi/3, 'right' : math.pi/3}
 
 		# Booleans
 
@@ -141,7 +141,6 @@ class King():
 	def blitme(self):
 
 		self.screen.blit(self.current_image, (self.x, self.y))
-		# pygame.draw.rect(self.screen, (255, 0, 0), self.rect, 1)
 
 		if not self.level_change:
 
@@ -619,12 +618,15 @@ class King():
 
 	def _jump(self, direction):
 
-		speed = (2 + (self.timer.elapsed_time()*2) / 185) * self.scale
+		speed = (1.5 + (self.timer.elapsed_time()*2) / 180) * self.scale
 
 		if direction == "up":
 			angle = 0
+
 		else:
-			angle = self.jumpAngles[direction] * (1 - self.timer.elapsed_time() / 1175)
+
+			angle = self.jumpAngles[direction] * (1 - self.timer.elapsed_time() / 1100)
+			speed += 1.0
 
 		if direction != "up":
 			self.direction = direction

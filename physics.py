@@ -12,7 +12,7 @@ class Physics:
 	def __init__(self):
 
 		self.scale = int(os.environ.get("resolution"))
-		self.gravity = (math.pi, 0.25 * self.scale)
+		self.gravity = (math.pi, 0.27 * self.scale)
 
 	def add_vectors(self, angle1, length1, angle2, length2):
 

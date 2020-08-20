@@ -33,15 +33,15 @@ class JKGame:
 
 		self.screen = pygame.display.set_mode((int(os.environ.get("screen_width")), int(os.environ.get("screen_height"))), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE|pygame.SRCALPHA)
 
-		self.fake_screen = self.screen.copy()
+		self.game_screen = self.screen.copy()
 
-		self.fake_screen_x = 0
+		self.game_screen_x = 0
 
-		self.levels = Levels(self.fake_screen) 
+		self.levels = Levels(self.game_screen) 
 
-		self.king = King(self.fake_screen, self.levels)
+		self.king = King(self.game_screen, self.levels)
 
-		self.babe = Babe(self.fake_screen, self.levels)
+		self.babe = Babe(self.game_screen, self.levels)
 
 		pygame.display.set_caption('Jump King At Home XD')
 
@@ -92,7 +92,7 @@ class JKGame:
 		self.fake_screen.fill(self.bg_color)
 
 		self.levels.blit1()
-		print(self.levels.current_level)
+
 		self.king.blitme()
 
 		self.babe.blitme()
@@ -115,15 +115,15 @@ class JKGame:
 
 				if self.levels.shake_var <= 150:
 
-					self.fake_screen_x = 0
+					self.game_screen_x = 0
 
 				elif self.levels.shake_var // 8 % 2 == 1:
 
-					self.fake_screen_x = -self.scale
+					self.game_screen_x = -self.scale
 
 				elif self.levels.shake_var // 8 % 2 == 0:
 
-					self.fake_screen_x = self.scale
+					self.game_screen_x = self.scale
 
 			if self.levels.shake_var > 260:
 
