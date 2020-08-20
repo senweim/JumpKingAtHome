@@ -5,12 +5,16 @@
 #
 
 import pygame
+import re
+import os
+import collections
+from settings import Settings
 
-class Background(pygame.sprite.Sprite):
+class Background():
 
 	def __init__(self, filename):
 
-		super().__init__() 
+		self.scale = int(os.environ.get("resolution"))
 
 		self.image = self._load_image(filename)
 
@@ -21,42 +25,42 @@ class Background(pygame.sprite.Sprite):
 		""" Load a specific image from a file """
 
 		try:
+
 			image = pygame.image.load(filename).convert_alpha()
+			image = pygame.transform.scale(image, (image.get_width() * self.scale, image.get_height() * self.scale))
+
 		except pygame.error as e:
 			print(f'Unable To Load Image: {filename}')
 			raise SystemExit(e)
 
 		return image
 
-class Backgrounds(pygame.sprite.Group):
+	def blitme(self, screen):
 
-	def __init__(self, screen, x, y, *filenames):
+		screen.blit(self.image, self.rect)
 
-		super().__init__()
+class Backgrounds():
+
+	def __init__(self, directory):
 
 		pygame.init()
 
-		self.screen = screen
+		self.directory = directory
 
-		self.x, self.y = x, y
+		self.backgrounds = collections.defaultdict()
 
-		self._load_background_sprites(filenames)
+		self._load_background_sprites()
 
-	def blitme(self):
+	def _load_background_sprites(self):
 
-		self.draw(self.screen)
+		for filename in sorted(os.listdir(self.directory), key = lambda filename: int(re.search(r'\d+', filename).group())):
+			
+			bg = Background(os.path.join(self.directory, filename))
 
-	def _load_background_sprites(self, filenames):
+			level = int(re.search(r'\d+', filename).group()) - 1
 
-		for filename in filenames:
+			self.backgrounds[level] = bg
 
-			self.add(Background(filename))
+if __name__ == "__main__":
 
-
-
-
-
-
-
-
-		
+	background = Backgrounds(pygame.display.set_mode((480, 360)), 's', "BG")

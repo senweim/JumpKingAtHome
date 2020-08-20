@@ -1,16 +1,18 @@
 #!/usr/env/bin python
-#
+#   
 # Game Screen
-#
-#
+# 
 
-import pygame
+import pygame 
 import sys
+import os
 from settings import Settings
 from spritesheet import SpriteSheet
 from Background import Backgrounds
 from King import King
-from Platforms import Platforms
+from Babe import Babe
+from Level import Levels
+from Camera import Camera
 
 class JKGame:
 	""" Overall class to manga game aspects """
@@ -23,33 +25,37 @@ class JKGame:
 
 		self.clock = pygame.time.Clock()
 
-		self.fps = self.settings.fps
+		self.fps = int(os.environ.get("fps"))
 
-		self.screen = pygame.display.set_mode((self.settings.screen_width, self.settings.screen_height))
+		self.scale = int(os.environ.get("resolution"))
+ 
+		self.bg_color = (0, 0, 0)
 
-		self.king = King(self.screen)
+		self.screen = pygame.display.set_mode((int(os.environ.get("screen_width")), int(os.environ.get("screen_height"))), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE|pygame.SRCALPHA)
 
-		self.platforms = Platforms(self.screen)
+		self.fake_screen = self.screen.copy()
 
-		self.background = Backgrounds(self.screen, 0, 0, "bg4.png")
+		self.fake_screen_x = 0
 
-		self.midground = Backgrounds(self.screen, 0, 0, "1.png")
+		self.levels = Levels(self.fake_screen) 
 
-		self.foreground = Backgrounds(self.screen, 0, 0, "fg1.png")
+		self.king = King(self.fake_screen, self.levels)
+
+		self.babe = Babe(self.fake_screen, self.levels)
 
 		pygame.display.set_caption('Jump King At Home XD')
 
 	def run_game(self):
-
-		""" Start the main loop for the game """
-
+ 
+		""" Start the main loop for the game """  
+         
 		while True:
 
 			self.clock.tick(self.fps)
-
+       
 			self._check_events()
 
-			self.king.update(self.platforms.platforms)
+			self._update_features()
 
 			self._update_screen()
 
@@ -61,23 +67,73 @@ class JKGame:
 
 				sys.exit()
 
-		self.king.check_controls()
+			if event.type == pygame.KEYDOWN:
+
+				if event.key == pygame.K_c:
+
+					if os.environ["mode"] == "creative":
+
+						os.environ["mode"] = "normal"
+
+					else:
+
+						os.environ["mode"] = "creative"
+
+			if event.type == pygame.VIDEORESIZE:
+
+				pygame.transform.scale(self.fake_screen, (event.w, event.h))
+
+	def _update_features(self):
+
+		self.levels.update_levels(self.king, self.babe)
 
 	def _update_screen(self):
 
-		self.screen.fill((self.settings.bg_color))
+		self.fake_screen.fill(self.bg_color)
 
-		self.background.blitme()
-
-		self.midground.blitme()
-
+		self.levels.blit1()
+		print(self.levels.current_level)
 		self.king.blitme()
 
-		self.foreground.blitme()
+		self.babe.blitme()
 
-		#self.platforms.blitme()
+		self.levels.blit2()
 
-		pygame.display.flip()
+		pygame.display.set_caption(f"Jump King At Home XD - {self.clock.get_fps():.2f} FPS")
+
+		self._shake_screen()
+
+		self.screen.blit(self.fake_screen, (self.fake_screen_x, 0))
+
+		pygame.display.update()
+
+	def _shake_screen(self):
+
+		try:
+
+			if self.levels.levels[self.levels.current_level].shake:
+
+				if self.levels.shake_var <= 150:
+
+					self.fake_screen_x = 0
+
+				elif self.levels.shake_var // 8 % 2 == 1:
+
+					self.fake_screen_x = -self.scale
+
+				elif self.levels.shake_var // 8 % 2 == 0:
+
+					self.fake_screen_x = self.scale
+
+			if self.levels.shake_var > 260:
+
+				self.levels.shake_var = 0
+
+			self.levels.shake_var += 1
+
+		except:
+
+			print("SHAKE ERROR")
 
 if __name__ == "__main__":
 

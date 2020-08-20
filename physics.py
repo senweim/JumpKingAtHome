@@ -5,13 +5,22 @@
 #
 
 import math
+import os
 
-def add_vectors(angle1, length1, angle2, length2):
+class Physics:
 
-	x = math.sin(angle1) * length1 + math.sin(angle2) * length2
-	y = math.cos(angle1) * length1 + math.cos(angle2) * length2
-	
-	angle = math.pi/2 - math.atan2(y, x)
-	length = math.hypot(x, y)
+	def __init__(self):
 
-	return angle, length
+		self.scale = int(os.environ.get("resolution"))
+		self.gravity = (math.pi, 0.25 * self.scale)
+
+	def add_vectors(self, angle1, length1, angle2, length2):
+
+		x = math.sin(angle1) * length1 + math.sin(angle2) * length2
+		y = math.cos(angle1) * length1 + math.cos(angle2) * length2
+		
+		angle = math.pi/2 - math.atan2(y, x)
+		length = math.hypot(x, y)
+
+		return angle, length
+
