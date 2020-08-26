@@ -35,6 +35,8 @@ class JKGame:
 
 		self.screen = pygame.display.set_mode((int(os.environ.get("screen_width")), int(os.environ.get("screen_height"))), pygame.HWSURFACE|pygame.DOUBLEBUF|pygame.RESIZABLE|pygame.SRCALPHA)
 
+		pygame.display.set_icon(pygame.image.load("icon.png"))
+
 		self.game_screen = self.screen.copy()
 
 		self.game_screen_x = 0
