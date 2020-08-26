@@ -12,8 +12,6 @@ class King_Particle:
 
 	def __init__(self, image, rows, image_count, size):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.start_rect = (0, 0, size, size)
 
 		self.blit_rect = None

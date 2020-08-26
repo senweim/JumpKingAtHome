@@ -13,11 +13,9 @@ class Names:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
+		self.font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 16)
 
-		self.font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 16 * self.scale)
-
-		self.small_font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 6 * self.scale)
+		self.small_font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 6)
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\new_location.wav")
 
@@ -147,7 +145,7 @@ class Names:
 
 			else:
 
-				final_screen = pygame.Surface((text.get_width() + 100 * self.scale, text.get_height()), pygame.SRCALPHA)
+				final_screen = pygame.Surface((text.get_width() + 100, text.get_height()), pygame.SRCALPHA)
 
 				text_start, text_end = (final_screen.get_width() - text.get_width()) / 2, (final_screen.get_width() - text.get_width()) / 2 + text.get_width()
 

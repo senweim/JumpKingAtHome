@@ -125,28 +125,28 @@ class Weather:
 
 		image = self.images[self.counter // self.interval]
 
-
 		if self.hasWind:
 
 			rect = wind
 
 			if rect.x > image.get_width():
 
-				rect.x = 0
+				rect.x -= rect.x // image.get_width() * rect.width
 
 			if rect.x < -image.get_width():
 
-				rect.x = image.get_width()
+				rect.x += rect.x // image.get_width() * rect.width
 
 
 			screen.blit(image, rect)
 			screen.blit(image, rect.move(image.get_width(), 0))
-			screen.blit(image, wind.move(-image.get_width(), 0))
+			screen.blit(image, rect.move(-image.get_width(), 0))
 
 
 		else:
 
 			screen.blit(image, (0, 0))
+
 		self.counter += 1
 
 

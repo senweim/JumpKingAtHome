@@ -27,15 +27,13 @@ class King():
 
 		self.screen = screen
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.sprites = King_Sprites().king_images
 
 		self.levels = levels
 
 		self.timer = Timer()
 
-		self.creative_speed = 10 * self.scale
+		self.creative_speed = 10
 
 		self.walkAngles = {"right" : math.pi/2, "left" : -math.pi/2}
 
@@ -83,13 +81,19 @@ class King():
 
 		self.collideRamp = False
 
+		self.isJump = False
+
+		self.isLanded = False
+
 		# Animation
 
-		self.x, self.y = 230 * self.scale, 298 * self.scale
+		self.x, self.y = 230, 298
 
-		self.width, self.height = 32 * self.scale, 32 * self.scale
+		self.width, self.height = 32, 32
 
-		self.rect = pygame.Rect((self.x + self.scale, self.y + 7 * self.scale, self.width - 12 * self.scale, self.height - 8 * self.scale))
+		self.rect_x, self.rect_y = self.x + 1, self.y + 7
+
+		self.rect_width, self.rect_height = self.width - 12, self.height - 8
 
 		self.direction = "right"
 
@@ -99,7 +103,7 @@ class King():
 
 		self.umbrellaCount = 0
 
-		self.maxSpeed = 11 * self.scale
+		self.maxSpeed = 11
  
 		self.idle_counter = 0
 
@@ -119,9 +123,6 @@ class King():
 
 		self.level_change = 0
 
-		self.isJump = False
-		self.isLanded = False
-
 		# Audio
 
 		self.channel = pygame.mixer.Channel(4)
@@ -138,7 +139,27 @@ class King():
 
 		self.charge_time = 0
 
+	@property
+	def rect(self):
+
+		return pygame.Rect((self.rect_x, self.rect_y, self.rect_width, self.rect_height))
+
 	def blitme(self):
+
+		self.x = self.rect.x - 5
+		self.y = self.rect.y - 9
+
+		if self.direction == "left":
+			self.x -= 1
+
+		if self.isFalling:
+
+			self.y += 4
+
+			if self.isHoldingBabe:
+
+				self.x -= 30
+				self.y -= 30
 
 		self.screen.blit(self.current_image, (self.x, self.y))
 
@@ -294,21 +315,56 @@ class King():
 		if self.speed > self.maxSpeed:
 			self.speed = self.maxSpeed
 
-		x, y = self.rect.x, self.rect.y
+		x, y = self.rect_x, self.rect_y
 
-		self.rect.move_ip(round(math.sin(self.angle) * self.speed), round(-math.cos(self.angle) * self.speed))
+		self.rect_x += math.sin(self.angle) * self.speed
+		self.rect_y -= math.cos(self.angle) * self.speed
 
-		if self.rect.x != x or abs(self.rect.y - y) > 1:
+		#self.rect.move_ip(round(math.sin(self.angle) * self.speed), round(-math.cos(self.angle) * self.speed))
+
+		if self.rect_x != x or abs(self.rect_y - y) > 1:
 
 			self.idle_counter = 0
 			self.isLookUp = False
 			self.isDance = False
 			self.danceCount = 0
 
-	def _collide_rect(self, rect1, rect2):
+	def _collide_right(self, platform):
 
-		return pygame.Rect(rect1[0], rect1[1], rect1[2], rect1[3] + 1).colliderect(rect2)
+			return self.rect_x + self.rect_width > platform.rect.left and self.rect_x < platform.rect.left and (platform.rect.top < self.rect_y < platform.rect.bottom or platform.rect.top < self.rect_y + self.rect_height < platform.rect.bottom or self.rect_y < platform.rect.top < self.rect_y + self.rect_height or self.rect_y < platform.rect.bottom < self.rect_y + self.rect_height) and round(self.rect_x + self.rect_width - platform.rect.left, 4) <= round(math.sin(self.angle) * self.speed, 4)
 
+	def _collide_left(self, platform):
+
+		return self.rect_x < platform.rect.right and self.rect_x + self.rect_width > platform.rect.right and (platform.rect.top < self.rect_y < platform.rect.bottom or platform.rect.top < self.rect_y + self.rect_height < platform.rect.bottom or self.rect_y < platform.rect.top < self.rect_y + self.rect_height or self.rect_y < platform.rect.bottom < self.rect_y + self.rect_height) and round(self.rect_x - platform.rect.right, 4) >= round(math.sin(self.angle) * self.speed, 4)
+
+	def _collide_top(self, platform):
+
+		return self.rect_y < platform.rect.bottom and self.rect_y + self.rect_height > platform.rect.bottom and (platform.rect.left < self.rect_x < platform.rect.right or platform.rect.left < self.rect_x + self.rect_width < platform.rect.right or self.rect_x < platform.rect.left < self.rect_x + self.rect_width or self.rect_x < platform.rect.right < self.rect_x + self.rect_width) and round(self.rect_y - platform.rect.bottom, 4) >= round(-math.cos(self.angle) * self.speed, 4)
+
+	def _collide_bottom(self, platform):
+
+		return self.rect_y + self.rect_height > platform.rect.top and self.rect_y < platform.rect.top and (platform.rect.left < self.rect_x < platform.rect.right or platform.rect.left < self.rect_x + self.rect_width < platform.rect.right or self.rect_x < platform.rect.left < self.rect_x + self.rect_width or self.rect_x < platform.rect.right < self.rect_x + self.rect_width) and round(self.rect_y + self.rect_height - platform.rect.top, 4) <= round(-math.cos(self.angle) * self.speed, 4)
+
+	def _collide_slope_bottom(self, platform, rel_x):
+
+		if rel_x > platform.rect.width:
+
+			rel_x = platform.rect.width
+
+		rel_y = platform.rect.bottom - (platform.rect.bottom - platform.rect.top)/(platform.rect.right - platform.rect.left)*(rel_x)
+
+		return self.rect_y + self.rect_height > rel_y and self.rect_y < rel_y and (platform.rect.left < self.rect_x < platform.rect.right or platform.rect.left < self.rect_x + self.rect_width < platform.rect.right or self.rect_x < platform.rect.left < self.rect_x + self.rect_width or self.rect_x < platform.rect.right < self.rect_x + self.rect_width)
+
+	def _collide_slope_top(self, platform, rel_x):
+
+		if rel_x > platform.rect.width:
+
+			rel_x = platform.rect.width
+
+		rel_y = platform.rect.top + (platform.rect.bottom - platform.rect.top)/(platform.rect.right - platform.rect.left)*(rel_x)
+
+		return self.rect_y < rel_y and self.rect_y + self.rect_height > rel_y and (platform.rect.left < self.rect_x < platform.rect.right or platform.rect.left < self.rect_x + self.rect_width < platform.rect.right or self.rect_x < platform.rect.left < self.rect_x + self.rect_width or self.rect_x < platform.rect.right < self.rect_x + self.rect_width)
+	
 	def _check_collisions(self):
 
 		self.isFalling = True
@@ -321,217 +377,236 @@ class King():
 		self.slip = 0
 		self.slope = 0
 
-		#print("------------------------------")
-
 		for platform in self.levels.levels[self.levels.current_level].platforms:
 
-			if self._collide_rect(self.rect, platform):
-				#print(platform)
-				if platform.slope:
- 					
+			if not platform.slope:
+
+				if self._collide_left(platform):
+
+					self.rect_x = platform.rect.right
+					self.lastCollision = platform
+					self.collided = True
+					self.collideRight = True
+
+				elif self._collide_right(platform):
+
+					self.rect_x = platform.rect.left - self.rect_width
+					self.lastCollision = platform
+					self.collided = True
+					self.collideLeft = True
+
+				elif self._collide_top(platform):
+					self.rect_y = platform.rect.bottom
+					self.lastCollision = platform
+					self.collideTop = True
+
+				elif self._collide_bottom(platform):
+
+					self.slip = platform.slip 
+					self.rect_y = platform.rect.top - self.rect_height
+					self.isFalling = False
+					self.collided = False
+					self.isContact = False
+					self.collideBottom = True
+
+					if not self.lastCollision:
+						self.isLanded = True
+						if self.speed >= self.maxSpeed:
+							self.isSplat = True
+
+					self.lastCollision = platform
+					self.level_change = 0
+
+			if platform.slope:
+
+				if platform.slope[1] > 0:
+
 					if platform.slope[0] > 0:
 
-						if platform.slope[1] > 0:
+						rel_x = self.rect_x + self.rect_width - platform.rect.left
 
-							rel_x = self.rect.right - platform.left
+						if self._collide_left(platform):
 
-							if self.rect.top <= platform.bottom and round(platform.bottom - self.rect.top) <= round(self.speed) and abs(self.angle) < math.pi/2:
-								self.rect.top = platform.bottom
-								self.lastCollision = platform
-								self.collideTop = True
+							self.rect_x = platform.rect.right
+							self.lastCollision = platform
+							self.collided = True
+							self.collideRight = True
 
-							elif self.rect.left <= platform.right and round(platform.right - self.rect.left) <= round(self.speed) and self.rect.bottom > platform.top:
-								self.rect.left = platform.right
-								self.lastCollision = platform
-								self.collided = True
-								self.collideRight = True
+						elif self._collide_right(platform) and self.rect_y + self.rect_height > platform.rect.bottom:
 
-							elif self.rect.right > platform.left and round(self.rect.right - platform.left) <= round(self.speed) and self.lastCollision != platform and math.sin(self.angle) > 0 and self.rect.bottom > platform.bottom:
-								self.rect.right = platform.left
-								self.collided = True
-								self.lastCollision = platform
-								self.collideLeft = True
+							self.rect_x = platform.rect.left - self.rect_width
+							self.lastCollision = platform
+							self.collided = True
+							self.collideLeft = True
 
+						elif self._collide_top(platform):
 
-							elif self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and self.rect.right > platform.right:
-								self.rect.bottom = platform.top
-								self.lastCollision = platform							
-								self.collideRamp = True
-								self.slope = platform.slope[0]
-								self.slip = platform.slip
+							self.rect_y = platform.rect.bottom
+							self.lastCollision = platform
+							self.collideTop = True
 
-							elif self.rect.bottom >= round(platform.bottom - platform.slope[0] * rel_x):
-								while self.rect.bottom >= round(platform.bottom - platform.slope[0] * rel_x):
-									if self.isFalling:
-										self.rect.move_ip(-1, -1)
-									else:
-										self.rect.move_ip(-1, 0)
-									rel_x = self.rect.right - platform.left
-								self.lastCollision = platform
-								self.collideRamp = True
-								self.slope = platform.slope[0]
-								self.slip = platform.slip
+						elif self._collide_slope_bottom(platform, rel_x):
 
-						if platform.slope[1] < 0:
+							# if self.rect_x + self.rect_width < platform.right:
 
-							rel_x = self.rect.left - platform.left
+							while self._collide_slope_bottom(platform, rel_x):
 
-							if self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and abs(self.angle) > math.pi/2:
-								self.slip += platform.slip 
-								self.rect.bottom = platform.top
-								self.isFalling = False
-								self.collided = False
-								self.lastCollision = platform
-								self.isContact = False
-								self.collideBottom = True
+								if self.isFalling:
+									self.rect_y -= 1
+									self.rect_x -= 1
+								else:
+									self.rect_x -= 1
 
-							elif self.rect.right >= platform.left and round(self.rect.right - platform.left) <= round(self.speed):
-								self.rect.right = platform.left
-								self.collided = True
-								self.lastCollision = platform
-								self.collideLeft = True
+								rel_x = self.rect_x + self.rect_width - platform.rect.left
 
-							elif self.rect.left <= platform.right and round(platform.right - self.rect.left) <= round(self.speed) and self.lastCollision != platform and math.sin(self.angle) < 0 and self.rect.top < platform.top:
-								self.rect.left = platform.right
-								self.collided = True
-								self.lastCollision = platform
-								self.collideRight = True
+							#else:
 
-							elif self.rect.top < round(platform.bottom - platform.slope[0] * rel_x):
+							#	self.rect_y = platform.top - self.rect_height			
 
-								while self.rect.top < round(platform.bottom - platform.slope[0] * rel_x):
-									self.rect.move_ip(1, 0)
-									rel_x = self.rect.left - platform.left
-
-								self.collided = True
-								self.collideTop = True
-								self.lastCollision = platform
+							self.lastCollision = platform
+							self.collideRamp = True
+							self.slope = platform.slope[0]
+							self.slip = platform.slip
 
 					if platform.slope[0] < 0:
 
-						if platform.slope[1] > 0:
+						rel_x = platform.rect.right - self.rect_x
 
-							rel_x = platform.right - self.rect.left
+						if self._collide_right(platform):
 
-							if self.rect.top <= platform.bottom and round(platform.bottom - self.rect.top) <= round(self.speed) and abs(self.angle) < math.pi/2:
-								self.rect.top = platform.bottom
-								self.lastCollision = platform
-								self.collideTop = True
+							self.rect_x = platform.rect.left - self.rect_width
+							self.lastCollision = platform
+							self.collided = True
+							self.collideLeft = True
 
-							elif self.rect.right >= platform.left and round(self.rect.right - platform.left) <= round(self.speed) and self.rect.bottom > platform.top:
-								self.rect.right = platform.left
-								self.collided = True
-								self.lastCollision = platform
-								self.collideLeft = True
+						elif self._collide_left(platform) and self.rect_y + self.rect_height > platform.rect.bottom:
 
-							elif self.rect.left <= platform.right and round(platform.right - self.rect.left) <= round(self.speed) and self.lastCollision != platform and math.sin(self.angle) < 0 and self.rect.bottom > platform.bottom:
-								self.rect.left = platform.right
-								self.collided = True
-								self.lastCollision = platform
-								self.collideRight = True
+							self.rect_x = platform.rect.right
+							self.lastCollision = platform
+							self.collided = True
+							self.collideRight = True
 
+						elif self._collide_top(platform):
 
-							elif self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and self.rect.left < platform.left:
-								self.rect.bottom = platform.top
-								self.lastCollision = platform							
-								self.collideRamp = True
-								self.slope = platform.slope[0]
-								self.slip = platform.slip
+							self.rect_y = platform.bottom
+							self.lastCollision = platform
+							self.collideTop = True
 
-							elif self.rect.bottom > round(platform.bottom + platform.slope[0] * rel_x):
-								while self.rect.bottom > round(platform.bottom + platform.slope[0] * rel_x):
-									if self.isFalling:
-										self.rect.move_ip(1, -1)
-									else:
-										self.rect.move_ip(1, 0)
-									rel_x = platform.right - self.rect.left
-								self.slope = platform.slope[0]
-								self.slip = platform.slip
-								self.collideRamp = True
-								self.lastCollision = platform
+						elif self._collide_slope_bottom(platform, rel_x):
 
-						if platform.slope[1] < 0:
+							# if self.rect_x > platform.left:
 
-							rel_x = platform.right - self.rect.right
+							while self._collide_slope_bottom(platform, rel_x):
 
-							if self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and abs(self.angle) > math.pi/2:
-								self.slip = platform.slip 
-								self.rect.bottom = platform.top
-								self.isFalling = False
-								self.collided = False
-								self.lastCollision = platform
-								self.isContact = False
-								self.collideBottom = True
+								if self.isFalling:
+									self.rect_x += 1
+									self.rect_y -= 1
+								else:
+									self.rect_x += 1
 
-							elif self.rect.left <= platform.right and round(platform.right - self.rect.left) <= round(self.speed):
-								self.rect.left = platform.right
-								self.collided = True
-								self.lastCollision = platform
-								self.collideRight = True
+								rel_x = platform.rect.right - self.rect_x
 
-							elif self.rect.right > platform.left and round(self.rect.right - platform.left) <= round(self.speed) and self.lastCollision != platform and math.sin(self.angle) > 0 and self.rect.top < platform.top:
-								self.rect.right = platform.left
-								self.collided = True
-								self.lastCollision = platform
-								self.collideLeft = True
+							#else:
 
-							elif self.rect.top < round(platform.bottom + platform.slope[0] * rel_x):
+							#	self.rect_y = platform.top - self.rect_height
 
-								while self.rect.top < round(platform.bottom + platform.slope[0] * rel_x):
-									self.rect.move_ip(-1, 0)
-									rel_x = platform.right - self.rect.right
+							self.lastCollision = platform
+							self.collideRamp = True
+							self.slope = platform.slope[0]
+							self.slip = platform.slip
 
-								self.collided = True
-								self.lastCollision = platform
-								self.collideTop = True
+				if platform.slope[1] < 0:
 
-				else:
+					if platform.slope[0] < 0:
 
-					if self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and -math.cos(self.angle) > 0 and not platform.support:
-						self.slip = platform.slip 
-						self.rect.bottom = platform.top
-						self.isFalling = False
-						self.collided = False
-						self.isContact = False
-						self.collideBottom = True
+						rel_x = self.rect_x + self.rect_width - platform.rect.left
 
-						if not self.lastCollision:
-							self.isLanded = True
-							if self.speed >= self.maxSpeed:
-								self.isSplat = True
+						if self._collide_left(platform):
 
-						self.lastCollision = platform
-						self.level_change = 0
+							self.rect_x = platform.rect.right
+							self.lastCollision = platform
+							self.collided = True
+							self.collideRight = True
 
-					elif self.rect.top <= platform.bottom and round(platform.bottom - self.rect.top) <= round(self.speed) and abs(self.angle) < math.pi/2:
-						self.rect.top = platform.bottom
-						self.lastCollision = platform
-						self.collideTop = True
+						elif self._collide_right(platform) and self.rect_y < platform.rect.top:
 
-					elif self.rect.left <= platform.right and round(platform.right - self.rect.left) <= round(self.speed):
-						self.rect.left = platform.right
-						self.lastCollision = platform
-						self.collided = True
-						self.collideRight = True
+							self.rect_x = platform.rect.left - self.rect_width
+							self.lastCollision = platform
+							self.collided = True
+							self.collideLeft = True
 
-					elif self.rect.right >= platform.left and round(self.rect.right - platform.left) <= round(self.speed):
-						self.rect.right = platform.left
-						self.lastCollision = platform
-						self.collided = True
-						self.collideLeft = True
+						elif self._collide_bottom(platform):
+
+							self.rect_y = platform.rect.bottom
+							self.lastCollision = platform
+							self.collideTop = True
+
+						elif self._collide_slope_top(platform, rel_x):
+
+							while self._collide_slope_top(platform, rel_x):
+
+								self.rect_x -= 1
+
+								rel_x = self.rect_x + self.rect_width - platform.rect.left
+
+							# else:
+
+							# 	self.rect_y = platform.top - self.rect_height			
+
+							self.collided = True
+							self.collideTop = True
+							self.lastCollision = platform
+
+					if platform.slope[0] > 0:
+
+						rel_x = platform.rect.right - self.rect_x
+
+						if self._collide_right(platform):
+
+							self.rect_x = platform.rect.left - self.rect_width
+							self.lastCollision = platform
+							self.collided = True
+							self.collideLeft = True
+
+						elif self._collide_left(platform) and self.rect_y < platform.rect.top:
+
+							self.rect_x = platform.rect.right
+							self.lastCollision = platform
+							self.collided = True
+							self.collideRight = True
+
+						elif self._collide_bottom(platform):
+
+							self.rect_y = platform.rect.bottom
+							self.lastCollision = platform
+							self.collideTop = True
+
+						elif self._collide_slope_top(platform, rel_x):
+
+							while self._collide_slope_top(platform, rel_x):
+
+								self.rect_x += 1
+
+								rel_x = platform.rect.right - self.rect_x
+
+							# else:
+
+							# 	self.rect_y = platform.top - self.rect_height
+
+							self.collided = True
+							self.collideTop = True
+							self.lastCollision = platform
 		
-		# Hits The Sides
+		#Hits The Sides
 
-		if self.rect.right > self.screen.get_width():
+		if self.rect_x + self.rect_width > self.screen.get_width():
 
-			self.rect.right = self.screen.get_width()
-			self.x = self.rect.left
+			self.rect_x = self.screen.get_width() - self.rect_width
 			self.collideRight = True
 			self.collided = True
 
-		if self.rect.left < 0:
-			self.rect.left = 0
-			self.x = self.rect.right - self.width
+		if self.rect_x < 0:
+			self.rect_x = 0
 			self.collideLeft = True
 			self.collided = True
 
@@ -563,10 +638,10 @@ class King():
 			self.angle, self.speed = self.physics.add_vectors(self.angle, self.speed, 5 * math.pi / 4 * self.slope, self.physics.gravity[1])
 
 			if not self.slip:
-				self.speed -= 0.35 * self.scale
+				self.speed -= 0.35
 
 			else:
-				self.speed -= 0.1 * self.scale
+				self.speed -= 0.1
 
 			if self.speed > 10:
 				self.speed = 10
@@ -592,15 +667,15 @@ class King():
 
 	def _check_level(self):
 
-		if self.rect.bottom < 0 and self.levels.current_level < self.levels.max_level:
+		if self.rect_y < 0 and self.levels.current_level < self.levels.max_level:
 
-			self.rect.bottom += self.screen.get_height()
+			self.rect_y += self.screen.get_height() + self.rect_width
 			self.levels.current_level += 1
 			self.level_change += 1
 
-		if self.rect.bottom > self.screen.get_height():
+		if self.rect_y > self.screen.get_height():
 
-			self.rect.bottom -= self.screen.get_height()
+			self.rect_y -= self.screen.get_height() + self.rect_width
 			self.levels.current_level -= 1
 			self.level_change -= 1
 
@@ -609,7 +684,7 @@ class King():
 		if self.lastCollision:
 			if not self.lastCollision.snow:
 
-				self.speed = self.scale
+				self.speed = 1
 				self.angle = self.walkAngles[direction]
 				self.isWalk = True
 
@@ -618,7 +693,7 @@ class King():
 
 	def _jump(self, direction):
 
-		speed = (1.5 + (self.timer.elapsed_time()*2) / 180) * self.scale
+		speed = (1.5 + (self.timer.elapsed_time()*2) / 180)
 
 		if direction == "up":
 			angle = 0
@@ -633,7 +708,7 @@ class King():
 
 		if self.lastCollision.snow:
 
-			if speed > 2.5 * self.scale:
+			if speed > 2.5:
 				self.angle, self.speed = self.physics.add_vectors(self.angle, self.speed, angle, speed)
 
 		else:
@@ -651,36 +726,21 @@ class King():
 
 		if keys[pygame.K_UP]:
 
-			self.rect.y -= self.creative_speed
+			self.rect_y -= self.creative_speed
 
 		if keys[pygame.K_DOWN]:
 
-			self.rect.y += self.creative_speed
+			self.rect_y += self.creative_speed
 
 		if keys[pygame.K_RIGHT]:
 
-			self.rect.x += self.creative_speed
+			self.rect_x += self.creative_speed
 
 		if keys[pygame.K_LEFT]:
 
-			self.rect.x -= self.creative_speed
+			self.rect_x -= self.creative_speed
 
 	def _update_sprites(self):
-
-		self.x = self.rect.x - 5 * self.scale
-		self.y = self.rect.y - 9 * self.scale
-
-		if self.direction == "left":
-			self.x -= self.scale
-
-		if self.isFalling:
-
-			self.y += 4 * self.scale
-
-			if self.isHoldingBabe:
-
-				self.x -= 30 * self.scale
-				self.y -= 30 * self.scale
 
 		if self.isWalk:
 

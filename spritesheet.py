@@ -17,8 +17,6 @@ class SpriteSheet:
 
 		pygame.init()
 
-		self.scale = int(os.environ.get("resolution"))
-
 		try:
 			self.sheet = pygame.image.load(filename).convert_alpha()
 
@@ -41,8 +39,6 @@ class SpriteSheet:
 		# 		colorkey = image.get_at((0, 0))
 
 			# image.set_colorkey(colorkey, pygame.RLEACCEL)
-
-		image = pygame.transform.scale(image, (image.get_width() * self.scale, image.get_height() * self.scale))
 
 		return image
 

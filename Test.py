@@ -1,32 +1,35 @@
+#!/usr/bin/env python
+#
+#
+#
+#
 
-class animal:
+class Rectangle:
 
-	def __init__(self):
+	""" SOME AUTISM SHIT LOL """
 
-		self.x = 1
+	def __init__(self, width, length):
 
-	def mult(self):
+		self.length = length
 
-		print('s')
+		self.width = width
 
-class dog(animal):
+		self.area = self.length * self.width
 
-	def __init__(self):
+		self.perimeter = self.length * 2 + self.width * 2
 
-		super().__init__()
-		self.y = 2
+	def write(self):
 
-	def mult(self):
+		print(f"The are of the rectangle is {self.area}")
+		print(f"The perimeter of the rectangle {self.perimter}")
 
-		print('s')
+if __name__ == "__main__":
 
-class eagle(animal, dog):
+	width = input("What is the width of the rectangle?:		")
 
-	def __init__(self):
+	length = input("What is the length of the rectangle?:		")
 
-		super().__init()
-		self.z = 3
+	rect = Rectangle(width, length)
 
-h = eagle()
+	rect.write()
 
-h.mult()

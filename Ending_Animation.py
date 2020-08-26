@@ -13,23 +13,19 @@ class Ending_Animation:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.end_counter = 0
 
-		self.end_pan = (-90 * self.scale, 90 * self.scale)
+		self.end_pan = (-90, 90)
 
-		self.stall_x = 240 * self.scale
+		self.stall_x = 240
 
-		self.stall_y = 220 * self.scale
+		self.stall_y = 220
 
 		self.channel = pygame.mixer.Channel(14)
 
 		self.ending_music = pygame.mixer.Sound("Audio\\Misc\\ending.wav")
 
-		self.end_image = pygame.image.load("imagecrown.png")
-
-		self.end_image = pygame.transform.scale(self.end_image, (self.end_image.get_width() * self.scale, self.end_image.get_height() * self.scale))
+		self.end_image = pygame.image.load("imagecrown.png").convert()
 
 	def update(self, level, king, babe):
 
@@ -88,7 +84,7 @@ class Ending_Animation:
 				if king.y <= level.flyer.rect.bottom:
 
 					king.isWearingCrown = True
-					king.rect.top = level.flyer.rect.bottom + (king.rect.top - king.y - 3 * self.scale)
+					king.rect_y = level.flyer.rect.bottom + (king.rect_y - king.y - 3)
 					king_command = "Freeze"
 
 				if self.end_counter == 360:
@@ -178,90 +174,97 @@ class Ending_Animation:
 
 	def scroll_screen(self, level, king):
 
-		if king.rect.x > self.stall_x:
+		if king.rect_x > self.stall_x:
 
-			rel_x = king.rect.x - self.stall_x
+			rel_x = self.stall_x - king.rect_x
 
-			king.rect.x -= rel_x
+			king.rect_x += rel_x
 
 			if level.midground:
-				level.midground.rect.move_ip(-rel_x, 0)
+				level.midground.x += rel_x
 
 			if level.props:
 				for prop in level.props:
-					prop.rect.move_ip(-rel_x, 0)
+					prop.x += rel_x
 
 			if level.npc:
-				level.npc.rect.move_ip(-rel_x, 0)	
+				level.npc.x += rel_x
 
 			if level.foreground:
-				level.foreground.rect.move_ip(-rel_x, 0)
+				level.foreground.x += rel_x
 
 			if level.platforms:
 				for platform in level.platforms:
-					platform.move_ip(-rel_x, 0)		
+					platform.x += rel_x		
 
-		if king.rect.y > self.stall_y:
+		if king.rect_y > self.stall_y:
 
-			rel_y = king.rect.y - self.stall_y
+			rel_y = self.stall_y - king.rect_y
 
 			if self.stall_y > level.screen.get_height() / 2:
 
-				self.stall_y -= 2 * self.scale
+				self.stall_y -= 2
 
-			king.rect.y -= rel_y
+			king.rect_y += rel_y
 
 			if level.midground:
-				level.midground.rect.move_ip(0, -math.sqrt(rel_y))
+				level.midground.y -= math.sqrt(abs(rel_y))
 
 			if level.props:
 				for prop in level.props:
-					prop.rect.move_ip(0, -math.sqrt(rel_y))
+					prop.y -= math.sqrt(abs(rel_y))
 
 			if level.npc:
-				level.npc.rect.move_ip(0, -math.sqrt(rel_y))	
+				level.npc.y -= math.sqrt(abs(rel_y))	
 
 			if level.foreground:
-				level.foreground.rect.move_ip(0, -math.sqrt(rel_y))
+				level.foreground.y -= math.sqrt(abs(rel_y))
 
 			if level.platforms:
 				for platform in level.platforms:
-					platform.move_ip(0, -math.sqrt(rel_y))		
+					platform.y -= math.sqrt(abs(rel_y))	
 
 	def move_screen(self, level, king, babe):
 
 		if self.end_pan[0] != 0 or self.end_pan[1] != 0:
 
 			try:
-				x = self.end_pan[0]/abs(self.end_pan[0]) / 2 * self.scale
+				x = self.end_pan[0]/abs(self.end_pan[0])
 			except ZeroDivisionError:
 				x = 0
 			try:
-				y = self.end_pan[1]/abs(self.end_pan[1]) / 2 * self.scale
+				y = self.end_pan[1]/abs(self.end_pan[1])
 			except ZeroDivisionError:
 				y = 0
 
 			if level.midground:
 
-				level.midground.rect.move_ip(x, y)
+				level.midground.x += x
+				level.midground.y += y
 
 			if level.props:
 				for prop in level.props:
-					prop.rect.move_ip(x, y)
+					prop.x += x
+					prop.y += y
 
 			if level.npc:
-				level.npc.rect.move_ip(x, y)	
+				level.npc.x += x	
+				level.npc.y += y
 
-			if level.foreground:
-				level.foreground.rect.move_ip(x, y)
+			if level.foreground:				
+				level.foreground.x += x
+				level.foreground.y += y
 
 			if level.platforms:
 				for platform in level.platforms:
-					platform.move_ip(x, y)
+					platform.x += x
+					platform.y += y
 
-			king.rect.move_ip(x, y)
+			king.rect_x += x
+			king.rect_y += y
 
-			babe.rect.move_ip(x, y)
+			babe.rect_x += x
+			babe.rect_y += y
 
 			self.end_pan = (self.end_pan[0] - x, self.end_pan[1] - y)
 

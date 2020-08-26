@@ -55,7 +55,11 @@ class Babe(King):
 
 		self.width, self.height = 32 * self.scale, 32 * self.scale
 
-		self.rect = pygame.Rect(self.x + self.scale, self.y + 7 * self.scale, self.width - 12 * self.scale, self.height - 8 * self.scale)
+		self.rect_x, self.rect_y = self.x + self.scale, self.y + 7 * self.scale
+
+		self.rect_width, self.rect_height = self.width - 12 * self.scale, self.height - 8 * self.scale
+
+		#self.rect = pygame.Rect(self.x + self.scale, self.y + 7 * self.scale, self.width - 12 * self.scale, self.height - 8 * self.scale)
 
 		self.current_image = self.sprites["Babe_Stand1"]
 
@@ -93,6 +97,9 @@ class Babe(King):
 
 	def blitme(self):
 
+		self.x = self.rect.x - 6 * self.scale
+		self.y = self.rect.y - 9 * self.scale
+
 		if self.levels.current_level == self.level:
 
 			self.screen.blit(self.current_image, (self.x, self.y))
@@ -127,13 +134,13 @@ class Babe(King):
 
 	def _check_ending(self, king):
 
-		if self.rect.y - king.rect.y >= 0:
+		if self.rect_y - king.rect_y >= 0:
 
-			if self.rect.x - king.rect.x <= self.ending_distance:
+			if self.rect_x - king.rect_x <= self.ending_distance:
 
 				self.levels.ending = True
 
-				king.rect.x, king.rect.y = self.rect.x - self.ending_distance, self.rect.y 
+				king.rect_x, king.rect_y = self.rect_x - self.ending_distance, self.rect_y 
 
 				king.speed = 0
 
@@ -165,51 +172,48 @@ class Babe(King):
 
 			elif command == "Snatched":
 
-				self.rect.move_ip((-999, -999))
+				self.rect_y += 999 * self.scale
 
 		else:
 
 			self.isKiss = False
 			self.hasKissed = False
 
-	def _add_gravity(self):
-
-		self.angle, self.speed = self.physics.add_vectors(self.angle, self.speed, self.physics.gravity[0], self.physics.gravity[1])
-
 	def _move(self):
 
 		if self.speed > self.maxSpeed:
 			self.speed = self.maxSpeed
 
-		self.rect.move_ip(round(math.sin(self.angle) * self.speed), round(-math.cos(self.angle) * self.speed))
+		self.rect_x += math.sin(self.angle) * self.speed
+		self.rect_y -= math.cos(self.angle) * self.speed
 
-	def _check_collisions(self):
+	# def _check_collisions(self):
 
-		self.isFalling = True
+	# 	self.isFalling = True
 
-		self.collideBottom = False
-		self.slip = 0
+	# 	self.collideBottom = False
+	# 	self.slip = 0
 
-		for platform in self.levels.levels[self.levels.current_level].platforms:
+	# 	for platform in self.levels.levels[self.levels.current_level].platforms:
 			
-			if self._collide_rect(self.rect, platform):
+	# 		if self._collide_rect(self.rect, platform):
 
-				if self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and -math.cos(self.angle) > 0 and not platform.support:
+	# 			if self.rect.bottom >= platform.top and round(self.rect.bottom - platform.top) <= round(self.speed) and -math.cos(self.angle) > 0 and not platform.support:
 
-					self.rect.bottom = platform.top
-					self.isFalling = False
-					self.isContact = False
-					self.collideBottom = True
+	# 				self.rect.bottom = platform.top
+	# 				self.isFalling = False
+	# 				self.isContact = False
+	# 				self.collideBottom = True
 
-					if not self.lastCollision:
-						self.isLanded = True
+	# 				if not self.lastCollision:
+	# 					self.isLanded = True
 
-					self.lastCollision = platform
-					self.slip = platform.slip
+	# 				self.lastCollision = platform
+	# 				self.slip = platform.slip
 
-		if not self.collideBottom:
+	# 	if not self.collideBottom:
 
-			self.lastCollision = None
+	# 		self.lastCollision = None
 
 	def _update_vectors(self):
 
@@ -238,9 +242,6 @@ class Babe(King):
 		self.timer.end()
 
 	def _update_sprites(self):
-
-		self.x = self.rect.x - 6 * self.scale
-		self.y = self.rect.y - 9 * self.scale
 
 		if self.isCrouch:
 

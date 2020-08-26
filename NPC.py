@@ -39,9 +39,7 @@ class NPC:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
-		self.font = pygame.font.Font("Fonts\\ttf_pixolde.ttf", 14 * self.scale)
+		self.font = pygame.font.Font("Fonts\\ttf_pixolde.ttf", 14)
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\talking.wav")
 
@@ -65,6 +63,10 @@ class NPC:
 
 		self.blit_counter = 0
 
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 	def blitme(self, screen):
 
 		screen.blit(self.current_image, self.rect)
@@ -97,7 +99,7 @@ class OldMan(NPC):
 
 		self.start_rect = (0, 0, 32, 24)
 
-		self.rect = pygame.Rect(320 * self.scale, 302 * self.scale, 32 * self.scale, 24 * self.scale)
+		self.x, self.y, self.width, self.height = 320, 302, 32, 24
 
 		self.spritesheet = SpriteSheet(self.directory)
 
@@ -357,7 +359,7 @@ class OldMan(NPC):
 
 					self.current_image = self.images["OldManTalk2"]
 
-				if king.rect.bottom > self.rect.y and isinstance(king.levels.levels[king.levels.current_level].npc, OldMan):
+				if king.y + king.height > self.y and isinstance(king.levels.levels[king.levels.current_level].npc, OldMan):
 
 					self.pause = 0
 					self.active = False
@@ -474,7 +476,7 @@ class Hermit(NPC):
 
 		self.start_rect = (0, 0, 32, 32)
 
-		self.rect = pygame.Rect(380 * self.scale, 312 * self.scale, 32 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = 380, 312, 32, 32
 
 		self.spritesheet = SpriteSheet(self.directory)
 
@@ -573,7 +575,7 @@ class Hermit(NPC):
 
 			self.blit_counter += 1
 
-			if king.rect.right > self.rect.x and isinstance(king.levels.levels[king.levels.current_level].npc, Hermit):
+			if king.x + king.width > self.x and isinstance(king.levels.levels[king.levels.current_level].npc, Hermit):
 
 				self.pause = 0
 				self.active = False
@@ -667,7 +669,7 @@ class Skeleton(NPC):
 
 		self.start_rect = (0, 0, 24, 24)
 
-		self.rect = pygame.Rect(402 * self.scale, 246 * self.scale, 24 * self.scale, 24 * self.scale)
+		self.x, self.y, self.width, self.height = 402, 246, 24, 24
 
 		self.spritesheet = SpriteSheet(self.directory)
 
@@ -744,7 +746,7 @@ class Skeleton(NPC):
 
 			if self.pause >= 30:
 
-				if king.rect.right > self.rect.x and isinstance(king.levels.levels[king.levels.current_level].npc, Skeleton):
+				if king.x + king.width > self.x and isinstance(king.levels.levels[king.levels.current_level].npc, Skeleton):
 
 					self.pause = 0
 					self.active = False

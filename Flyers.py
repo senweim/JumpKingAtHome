@@ -28,27 +28,29 @@ class Flyers:
 
 		self.flyers[10] = Crow(15, 184, 1, "gold")
 
-		self.flyers[42] = Angels()
+		self.flyers[42] = Angels(int(os.environ.get("screen_width")), 0)
 
 class Flyer:
 
-	def __init__(self):
-
-		self.scale = int(os.environ.get("resolution"))
+	def __init__(self, x, y):
 
 		self.images = None
+
+		self.x, self.y, self.width, self.height = x, y, 32, 32
 
 		self.interval = 6
 
 		self.blit_counter = 0
 
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 class Crow(Flyer):
 
 	def __init__(self, x, y, direction, gold = "none", reverse = False):
 
-		super().__init__()
-
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 32 * self.scale, 32 * self.scale)
+		super().__init__(x, y)
 
 		self.directory = "Cro"
 
@@ -120,9 +122,9 @@ class Crow(Flyer):
 
 		if self.active == True:
 
-			self.rect.x += 1 * self.direction
+			self.x += 1 * self.direction
 
-			self.rect.y -= self.flyCount ** 1.001
+			self.y -= self.flyCount ** 1.001
 
 			self.flyCount += 1
 
@@ -132,15 +134,13 @@ class Crow(Flyer):
 
 class Angels(Flyer):
 
-	def __init__(self):
+	def __init__(self, x, y):
 
-		super().__init__()
+		super().__init__(x, y)
 
 		self.filename = "ending_animations.png"
 
 		self.start_rect1, self.start_rect2 = (224, 96, 32, 32), (224, 160, 32, 32)
-
-		self.rect = pygame.Rect(int(os.environ.get("screen_width")), 0, 32, 32)
 
 		self.spritesheet = SpriteSheet(self.filename)
 
@@ -172,12 +172,14 @@ class Angels(Flyer):
 
 		if self.active:
 			try:
-				self.rect.move_ip(-math.sqrt(self.rect.x - king.x + 2 * self.scale) / 2, math.sqrt(king.y - self.rect.y - king.y / 3) / 2)
+				self.x -= math.sqrt(self.x - king.x + 2) / 2
+				self.y += math.sqrt(king.y - self.y - king.y / 3) / 2
 			except:
 				pass
 
 		else:
 			try:
-				self.rect.move_ip((math.sqrt(int(os.environ.get("screen_width")) - self.rect.x)), -math.sqrt(self.rect.y - 0))
+				self.x += math.sqrt(int(os.environ.get("screen_width")) - self.x)
+				self.y -= math.sqrt(self.y - 0)
 			except:
 				pass

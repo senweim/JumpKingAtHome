@@ -13,23 +13,35 @@ class Scrollers:
 
 	def __init__(self):
 
+		self.directory = "Scrolling"
+
 		self.images = collections.defaultdict()
 
 		self.scrollers = collections.defaultdict()
 
 		self._load_images()
 
+		self._load_scrollers()
+
 	def _load_images(self):
 
-		for file in os.listdir("Scrolling"):
+		for file in os.listdir(self.directory):
 
 			if "bird" in file:
 
-				self.images[file] = Birds().load_image(file)
+				start_rect = (0, 0, 128, 96)
+
+				spritesheet = SpriteSheet(f"{self.directory}\\{file}")
+
+				images = spritesheet.load_grid(start_rect, 2, 4, -1)
+
+				self.images[file] = images
 
 			else:
 
-				self.images[file] = Cloud().load_image(file)
+				self.images[file] = pygame.image.load(f"{self.directory}\\{file}").convert_alpha()
+
+	def _load_scrollers(self):
 
 		self.scrollers[3] = [Cloud(-40, 50, 0.05, self.images["4_clouds.png"], "bg")]
 
@@ -79,63 +91,53 @@ class Cloud:
 
 	def __init__(self, x = 0, y = 0, speed = None, image = None, layer = None):
 
-		self.directory = "Scrolling"
-
-		self.scale = int(os.environ.get("resolution"))
-
 		self.layer = layer
-
-		self.x, self.y = x * self.scale, y * self.scale
 
 		self.speed = speed
 
 		self.image = image
 
+		self.x, self.y, self.width, self.height = x, y, self.image.get_width(), self.image.get_height()
+
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 	def blitme(self, screen, layer):
 
 		if layer == self.layer:
 
-			screen.blit(self.image, (self.x, self.y))#, special_flags = pygame.BLEND_RGB_MAX)
-			screen.blit(self.image, (self.x - self.image.get_width(), self.y))#, special_flags = pygame.BLEND_RGB_MAX)
-			screen.blit(self.image, (self.x + self.image.get_width(), self.y))#, special_flags = pygame.BLEND_RGB_MAX)
+			screen.blit(self.image, self.rect)#, special_flags = pygame.BLEND_RGB_MAX)
+			screen.blit(self.image, self.rect.move(-self.width, 0))#, special_flags = pygame.BLEND_RGB_MAX)
+			screen.blit(self.image, self.rect.move(self.width, 0))#, special_flags = pygame.BLEND_RGB_MAX)
 
-			self.x += self.speed * self.scale
+			self.x += self.speed
 
 			if self.x > screen.get_width():
 
-				self.x = self.x - self.image.get_width()
+				self.x -= self.width
 
-			if self.x < 0 - self.image.get_width():
+			if self.x < -self.width:
 
-				self.x = self.x + self.image.get_width()
+				self.x += self.width
 
-	def load_image(self, file):
-
-		image = pygame.image.load(f"{self.directory}\\{file}").convert_alpha()
-
-		image = pygame.transform.scale(image, (image.get_width() * self.scale, image.get_height() * self.scale))
-
-		return image
-
-class Birds:
+class Birds(Cloud):
 
 	def __init__(self, x = 0, y = 0, speed = 0, images = None, layer = None):
-
-		self.directory = "Scrolling"
-
-		self.scale = int(os.environ.get("resolution"))
 
 		self.layer = layer
 
 		self.speed = speed
 
-		self.start_rect = (0, 0, 128, 96)
+		self.images = images
 
-		self.x, self.y = x * self.scale, y * self.scale
+		self.x, self.y, self.width, self.height = x, y, self.images[0].get_width(), self.images[0].get_height()
 
 		self.blit_counter = 0
 
-		self.images = images
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
 
 	def blitme(self, screen, layer):
 
@@ -145,24 +147,16 @@ class Birds:
 
 				self.blit_counter = 0
 
-			screen.blit(self.images[self.blit_counter//6], (self.x, self.y))
+			screen.blit(self.images[self.blit_counter//6], self.rect)
 
 			self.blit_counter += 1
 
-			self.x += self.speed * self.scale
+			self.x += self.speed
 
 			if self.x > screen.get_width():
 
-				self.x = self.x - self.images[0].get_width()
+				self.x = self.x - self.width
 
-			if self.x < 0 - self.images[0].get_width():
+			if self.x < 0 - self.width:
 				
 				self.x = screen.get_width()
-
-	def load_image(self, file):
-
-		spritesheet = SpriteSheet(f"{self.directory}\\{file}")
-
-		images = spritesheet.load_grid(self.start_rect, 2, 4, -1)
-
-		return images

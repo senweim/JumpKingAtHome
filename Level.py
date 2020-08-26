@@ -21,6 +21,7 @@ from Names import Names
 from Readable import Readables
 from Flyers import Flyers
 from Ending_Animation import Ending_Animation
+from Wind import Wind
 
 class Level:
 
@@ -72,8 +73,6 @@ class Levels:
 
 		self.screen = screen
 
-		self.scale = int(os.environ.get("resolution"))
-
 		# Objects
 
 		self.platforms = Platforms()
@@ -114,15 +113,13 @@ class Levels:
 
 		# Movement 
 
-		self.wind_var = 0
-
 		self.shake_var = 0
 
 		self.shake_levels = [39, 40, 41]
 
-		self.wind_rect = pygame.Rect((0, 0, self.screen.get_width(), self.screen.get_height()))
+		self.wind = Wind(self.screen)
 
-		self.levels = collections.defaultdict()
+		self.levels = {}
 
 		self._load_levels()
 
@@ -159,7 +156,7 @@ class Levels:
 				current_level.npc.blitme(self.screen)
 
 			if current_level.weather:
-				current_level.weather.blitme(self.screen, self.wind_rect)
+				current_level.weather.blitme(self.screen, self.wind.rect)
 
 		except Exception as e:
 			
@@ -193,7 +190,7 @@ class Levels:
 
 			# if current_level.platforms:
 			# 	for platform in current_level.platforms:
-			# 		pygame.draw.rect(self.screen, (255, 0, 0), platform, 1)
+			# 		pygame.draw.rect(self.screen, (255, 0, 0), platform.rect, 1)
 
 			if self.END:
 
@@ -344,11 +341,7 @@ class Levels:
 
 		try:
 
-			wind = math.sin(self.wind_var) * (2.5 * self.scale) ** 2
-
-			self.wind_var += math.pi / 500
-
-			self.wind_rect.move_ip((wind, 0))
+			wind = self.wind.calculate_wind(king)
 
 			if self.levels[self.current_level].weather:
 

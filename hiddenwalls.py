@@ -16,7 +16,6 @@ class HiddenWalls:
 
 		self.directory = "hiddenwalls"
 
-		self.scale = int(os.environ.get("resolution"))
 		self.names = {"6_hidden_wall1.png" : (303, 223),
 					"6_hidden_wall2_1.png" : (382, 47),
 					"6_hidden_wall2_2.png" : (288, 47),
@@ -24,10 +23,6 @@ class HiddenWalls:
 					"7_hidden_wall1_1.png" : (152, 279),
 					"7_hidden_wall1_2.png" : (240, 303),
 					"21_hidden_wall1.png" : (7, 287)}
-
-		for name in self.names:
-
-			self.names[name] = tuple(map(lambda x: x * self.scale, self.names[name]))
 
 		self.hiddenwalls = collections.defaultdict()
 
@@ -49,11 +44,7 @@ class HiddenWall:
 
 	def __init__(self, x, y, directory, file):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.image = pygame.image.load(f"{directory}\\{file}")
-
-		self.image = pygame.transform.scale(self.image, (self.image.get_width() * self.scale, self.image.get_height() * self.scale))
 
 		self.fake = pygame.Surface((self.image.get_width(), self.image.get_height())).convert()
 
@@ -74,8 +65,6 @@ class HiddenWall:
 		self.mask = pygame.mask.from_surface(self.image)
 
 		self.opacity = 255
-
-		self.scale = int(os.environ.get("resolution"))
 
 	def blitme(self, screen):
 

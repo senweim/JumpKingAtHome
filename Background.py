@@ -18,8 +18,13 @@ class Background():
 
 		self.image = self._load_image(filename)
 
-		self.rect = self.image.get_rect()
+		self.x, self.y = 0, 0
+		self.width, self.height = self.image.get_size()
 
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 	def _load_image(self, filename, colorkey = None):
 
 		""" Load a specific image from a file """

@@ -151,13 +151,16 @@ class Prop:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.images = None
 
 		self.interval = 10
 
 		self.blit_counter = 0
+
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 
 	def blitme(self, screen):
 
@@ -178,7 +181,7 @@ class Gargoyle(Prop):
 
 		self.start_rect = (0, 0, 41, 39)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 41 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 41, 32
 
 		self.spritesheet = SpriteSheet(self.filename)
 
@@ -200,7 +203,7 @@ class Merchant(Prop):
 
 		self.start_rect = (0, 0, 32, 32)
 
-		self.rect = pygame.Rect(30 * self.scale, 270 * self.scale, 32 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = 30, 270, 32, 32
 
 		self.spritesheet = SpriteSheet(self.filename)
 
@@ -220,7 +223,7 @@ class Bonfire(Prop):
 
 		self.start_rect = (0, 0, 32, 32)
 
-		self.rect = pygame.Rect(160 * self.scale, 298 * self.scale, 32 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = 160, 298, 32, 32
 
 		self.interval = 5
 
@@ -238,7 +241,7 @@ class FlowingWater(Prop):
 
 		self.start_rect = (0, 0, 442, 75)
 
-		self.rect = pygame.Rect(0 * self.scale, 283 * self.scale, 442 * self.scale, 75 * self.scale)
+		self.x, self.y, self.width, self.height = 0, 283, 442, 75
 
 		self.interval = 10
 
@@ -256,7 +259,7 @@ class SewerDrop(Prop):
 
 		self.start_rect = (0, 0, 16, 48)
 
-		self.rect = pygame.Rect(340 * self.scale, 160 * self.scale, 16 * self.scale, 48 * self.scale)
+		self.x, self.y, self.width, self.height = 340, 160, 16, 48
 
 		self.interval = 6
 
@@ -274,7 +277,7 @@ class OvenFire(Prop):
 
 		self.start_rect = (0, 0, 32, 32)
 
-		self.rect = pygame.Rect(400 * self.scale, 82 * self.scale, 32 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = 400, 82, 32, 32
 
 		self.interval = 6
 
@@ -292,7 +295,7 @@ class Kettle(Prop):
 
 		self.start_rect = (0, 0, 28, 24)
 
-		self.rect = pygame.Rect(442 * self.scale, 64 * self.scale, 28 * self.scale, 24 * self.scale)
+		self.x, self.y, self.width, self.height = 442, 64, 28, 24
 
 		self.interval = 6
 
@@ -310,7 +313,7 @@ class Grammofon(Prop):
 
 		self.start_rect = (0, 0, 15, 25)
 
-		self.rect = pygame.Rect(10 * self.scale, 278 * self.scale, 15 * self.scale, 25 * self.scale)
+		self.x, self.y, self.width, self.height = 10, 278, 15, 25
 
 		self.interval = 6
 
@@ -328,7 +331,7 @@ class Candle(Prop):
 
 		self.start_rect = (0, 0, 14, 18)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 14 * self.scale, 18 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 14, 18
 
 		self.interval = 6
 
@@ -356,7 +359,7 @@ class DungeonTorch(Prop):
 
 		self.start_rect = (0, 0, 32, 32)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 32 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 32, 32
 
 		self.interval = 6
 
@@ -384,7 +387,7 @@ class Flag(Prop):
 
 		self.start_rect = (0, 0, 96, 32)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 96 * self.scale, 32 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 96, 32
 
 		self.interval = 6
 
@@ -406,7 +409,7 @@ class Dust1(Prop):
 
 		self.start_rect = (0, 0, 6, 62)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 6 * self.scale, 62 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 6, 62
 
 		self.interval = 6
 
@@ -438,7 +441,7 @@ class Dust2(Prop):
 
 		self.start_rect = (0, 0, 9, 61)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 9 * self.scale, 61 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 9, 61
 
 		self.interval = 6
 
@@ -470,7 +473,7 @@ class Dust3(Prop):
 
 		self.start_rect = (0, 0, 5, 61)
 
-		self.rect = pygame.Rect(x * self.scale, y * self.scale, 5 * self.scale, 61 * self.scale)
+		self.x, self.y, self.width, self.height = x, y, 5, 61
 
 		self.interval = 6
 

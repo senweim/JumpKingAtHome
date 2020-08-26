@@ -12,8 +12,6 @@ class Rectangles:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.levels = collections.defaultdict()
 
 		self.levels[0]	=	[(352, 185, 128, 175, 0, 0, False, False),
@@ -804,21 +802,17 @@ class Rectangles:
 							(368, 144, 63, 7, 0, 0, False, False),
 							(425, 128, 6, 16, 0, 0, False, False)]
 
-		for level in self.levels:
+class Platform():
 
-			self.levels[level] = list(map(lambda t : (*map(lambda n : n * self.scale, t[0:4]), *t[4:]), self.levels[level])) 
+	def __init__(self, x, y, width, height, slope = False, slip = False, support = False, snow = False):
 
-class Platform(pygame.Rect):
-
-	def __init__(self, x, y, width, length, slope = False, slip = False, support = False, snow = False):
-
-		super().__init__(x, y, width, length)
+		self.x, self.y, self.width, self.height = x, y, width, height
 
 		self.type = "Land"
 
 		if slope:
 
-			self.slope = (slope[0] * length/width, slope[1])
+			self.slope = (slope[0] * self.height/self.width, slope[1])
 
 		else:
 
@@ -830,7 +824,7 @@ class Platform(pygame.Rect):
 			self.type = "Ice"
 
 		else:
-			self.slip = 0.2
+			self.slip = 0
 
 		self.support = support
 
@@ -840,6 +834,10 @@ class Platform(pygame.Rect):
 
 			self.type = "Snow"
 
+	@property
+	def rect(self):
+		return pygame.Rect(self.x, self.y, self.width, self.height)
+	
 
 class Platforms():
 

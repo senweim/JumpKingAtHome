@@ -14,9 +14,7 @@ class Readables:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
-		self.font = pygame.font.Font("Fonts\\ttf_pixolde.ttf", 14 * self.scale)
+		self.font = pygame.font.Font("Fonts\\ttf_pixolde.ttf", 14)
 
 		self.readable_6 = ((304, 278, 29, 27), """I have had enough. My feet hurt from all the jumping, I have fallen too many times to count... How long has it been by now?
 
@@ -72,19 +70,17 @@ class Readables:
 
 	def _load_readables(self):
 
-		self.readables[6] = Readable(tuple(map(lambda x: x * self.scale, self.readable_6[0])), self.readable_6[1], self.font)
+		self.readables[6] = Readable(self.readable_6[0], self.readable_6[1], self.font)
 
-		self.readables[10] = Readable(tuple(map(lambda x: x * self.scale, self.readable_10[0])), self.readable_10[1], self.font)
+		self.readables[10] = Readable(self.readable_10[0], self.readable_10[1], self.font)
 
-		self.readables[15] = Readable(tuple(map(lambda x: x * self.scale, self.readable_15[0])), self.readable_15[1], self.font)
+		self.readables[15] = Readable(self.readable_15[0], self.readable_15[1], self.font)
 
-		self.readables[21] = Readable(tuple(map(lambda x: x * self.scale, self.readable_21[0])), self.readable_21[1], self.font)
+		self.readables[21] = Readable(self.readable_21[0], self.readable_21[1], self.font)
 
 class Readable:
 
 	def __init__(self, rect, quote, font):
-
-		self.scale = int(os.environ.get("resolution"))
 
 		self.interval = 10
 

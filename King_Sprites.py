@@ -18,8 +18,6 @@ class King_Sprites():
 
 		self.filename2 = "ending_animations.png"
 
-		self.scale = int(os.environ["resolution"])
-
 		self.spritesheet = SpriteSheet(self.filename)
 
 		self.spritesheet2 = SpriteSheet(self.filename2)
@@ -63,6 +61,7 @@ class King_Sprites():
 									"King_Snatch",
 									"King_Normal_Umbrella3",
 									"King_Look_Up_Umbrella3"]
+
 
 		# self.hitbox_offsets = [(1, 4, -6, -4),
 		# 						(1, 4, -6, -4),
