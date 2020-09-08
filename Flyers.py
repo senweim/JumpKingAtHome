@@ -58,7 +58,7 @@ class Crow(Flyer):
 
 		self.direction = direction
 
-		self.channel = pygame.mixer.Channel(16)
+		self.channel = pygame.mixer.Channel(12)
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\bird_fly.wav")
 
@@ -138,7 +138,7 @@ class Angels(Flyer):
 
 		super().__init__(x, y)
 
-		self.filename = "ending_animations.png"
+		self.filename = "images\\sheets\\ending_animations.png"
 
 		self.start_rect1, self.start_rect2 = (224, 96, 32, 32), (224, 160, 32, 32)
 
@@ -150,7 +150,7 @@ class Angels(Flyer):
 
 		self.images["NoCrown"] = self.spritesheet.load_grid(self.start_rect1, 2, 1, -1)
 
-		self.channel = pygame.mixer.Channel(15)
+		self.channel = pygame.mixer.Channel(11)
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\plink.wav")
 
@@ -172,14 +172,14 @@ class Angels(Flyer):
 
 		if self.active:
 			try:
-				self.x -= math.sqrt(self.x - king.x + 2) / 2
-				self.y += math.sqrt(king.y - self.y - king.y / 3) / 2
+				self.x -= math.sqrt(self.x - king.x) / 3
+				self.y += math.sqrt(king.y - self.y - king.y / 3) / 3
 			except:
 				pass
 
 		else:
 			try:
-				self.x += math.sqrt(int(os.environ.get("screen_width")) - self.x)
-				self.y -= math.sqrt(self.y - 0)
+				self.x += math.sqrt(int(os.environ.get("screen_width")) - self.x) / 3
+				self.y -= math.sqrt(self.y - 0) / 3
 			except:
 				pass

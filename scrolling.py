@@ -107,9 +107,14 @@ class Cloud:
 
 		if layer == self.layer:
 
-			screen.blit(self.image, self.rect)#, special_flags = pygame.BLEND_RGB_MAX)
-			screen.blit(self.image, self.rect.move(-self.width, 0))#, special_flags = pygame.BLEND_RGB_MAX)
-			screen.blit(self.image, self.rect.move(self.width, 0))#, special_flags = pygame.BLEND_RGB_MAX)
+			if self.rect.colliderect(screen.get_rect()):
+				screen.blit(self.image, self.rect)
+
+			if self.rect.move(-self.width, 0).colliderect(screen.get_rect()):
+				screen.blit(self.image, self.rect.move(-self.width, 0))
+
+			if self.rect.move(self.width, 0).colliderect(screen.get_rect()):
+				screen.blit(self.image, self.rect.move(self.width, 0))
 
 			self.x += self.speed
 

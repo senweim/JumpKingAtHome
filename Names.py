@@ -15,13 +15,13 @@ class Names:
 
 		self.font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 16)
 
-		self.small_font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 6)
+		self.small_font = pygame.font.Font("Fonts\\ttf_pixolde_bold.ttf", 12)
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\new_location.wav")
 
 		self.audio.set_volume(1.0)
 
-		self.channel = pygame.mixer.Channel(6)
+		self.channel = pygame.mixer.Channel(8)
 
 		self.names = collections.defaultdict()
 

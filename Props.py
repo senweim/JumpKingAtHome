@@ -229,6 +229,15 @@ class Bonfire(Prop):
 
 		self.images = self.spritesheet.load_strip(self.start_rect, 3, -1)
 
+	def blitme(self, screen):
+
+		if self.blit_counter >= len(self.images) * self.interval:
+			self.blit_counter = 0
+
+		screen.blit(self.images[self.blit_counter // self.interval], self.rect, special_flags = pygame.BLEND_RGBA_ADD)
+
+		self.blit_counter += 1
+
 class FlowingWater(Prop):
 
 	def __init__(self):

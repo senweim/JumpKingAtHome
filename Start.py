@@ -15,7 +15,7 @@ class Start:
 
 		self.screen = screen
 
-		self.channels = [pygame.mixer.Channel(18), pygame.mixer.Channel(19)]
+		self.channels = [pygame.mixer.Channel(0), pygame.mixer.Channel(15)]
 
 		self.menus = menus
 
@@ -51,9 +51,9 @@ class Start:
 
 		images = {}
 
-		for image_name in os.listdir("images"):
+		for image_name in os.listdir("images\\logos"):
 
-			images[re.match(r"[^.]+", image_name).group()] = pygame.image.load(f"images\\{image_name}").convert_alpha()
+			images[re.match(r"[^.]+", image_name).group()] = pygame.image.load(f"images\\logos\\{image_name}").convert_alpha()
 
 		return images
 
@@ -133,6 +133,9 @@ class Start:
 
 			self.title_logo.fade()
 
+			for channel in self.channels:
+				channel.stop()
+				
 			if self.title_logo.fadecomplete and not self.text.complete:
 
 				self.text.brighten()
@@ -144,7 +147,6 @@ class Start:
 			elif self.text.fadecomplete and not self.complete:
 
 				self.fade()
-
 
 			elif self.complete:
 

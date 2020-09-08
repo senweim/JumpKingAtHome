@@ -53,7 +53,7 @@ class Level:
 
 		self.background_audio = None
 
-		self.npc = None
+		self.npc = None     
 
 		self.name = None
 
@@ -89,7 +89,7 @@ class Levels:
 
 		self.hiddenwalls = HiddenWalls().hiddenwalls
 
-		self.scrollers = Scrollers().scrollers
+		self.scrollers = Scrollers()
 
 		self.npcs = NPCs().npcs
 
@@ -97,7 +97,7 @@ class Levels:
 
 		self.readables = Readables().readables
 
-		self.flyers = Flyers().flyers
+		self.flyers = Flyers()
 
 		self.Ending_Animation = Ending_Animation()
 
@@ -105,7 +105,7 @@ class Levels:
 
 		self.background_audio = BackgroundAudio().level_audio
 
-		self.channels = [pygame.mixer.Channel(0), pygame.mixer.Channel(1), pygame.mixer.Channel(2), pygame.mixer.Channel(3)]
+		self.channels = [pygame.mixer.Channel(2), pygame.mixer.Channel(3), pygame.mixer.Channel(4), pygame.mixer.Channel(5)]
 
 		for channel in self.channels:
 
@@ -188,9 +188,10 @@ class Levels:
 			if self.names.active:
 				self.names.blitme(self.screen)
 
-			# if current_level.platforms:
-			# 	for platform in current_level.platforms:
-			# 		pygame.draw.rect(self.screen, (255, 0, 0), platform.rect, 1)
+			if os.environ.get("hitboxes"):
+				if current_level.platforms:
+					for platform in current_level.platforms:
+						pygame.draw.rect(self.screen, (255, 0, 0), platform.rect, 1)
 
 			if self.END:
 
@@ -404,7 +405,7 @@ class Levels:
 				except:
 					pass
 				try:
-					self.levels[i].scrollers = self.scrollers[i]
+					self.levels[i].scrollers = self.scrollers.scrollers[i]
 				except:
 					pass
 
@@ -435,7 +436,7 @@ class Levels:
 					pass
 
 				try:
-					self.levels[i].flyer = self.flyers[i]
+					self.levels[i].flyer = self.flyers.flyers[i]
 				except:
 					pass
 
@@ -443,7 +444,12 @@ class Levels:
 
 			print("LOAD LEVELS ERROR: ", e)
 
+	def reset(self):
 
+		self.current_level = 0
 
+		self.wind.__init__(self.screen)
 
+		self.scrollers.__init__()
 
+		self.flyers.__init__()

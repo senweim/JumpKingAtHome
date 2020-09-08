@@ -8,13 +8,10 @@ import pygame
 import re
 import os
 import collections
-from settings import Settings
 
 class Background():
 
 	def __init__(self, filename):
-
-		self.scale = int(os.environ.get("resolution"))
 
 		self.image = self._load_image(filename)
 
@@ -32,7 +29,6 @@ class Background():
 		try:
 
 			image = pygame.image.load(filename).convert_alpha()
-			image = pygame.transform.scale(image, (image.get_width() * self.scale, image.get_height() * self.scale))
 
 		except pygame.error as e:
 			print(f'Unable To Load Image: {filename}')

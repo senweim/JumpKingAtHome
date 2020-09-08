@@ -14,9 +14,9 @@ class King_Sprites():
 
 	def __init__(self):
 
-		self.filename = "base.png"
+		self.filename = "images\\sheets\\base.png"
 
-		self.filename2 = "ending_animations.png"
+		self.filename2 = "images\\sheets\\ending_animations.png"
 
 		self.spritesheet = SpriteSheet(self.filename)
 

@@ -31,7 +31,7 @@ class King_Audio:
 
 			a = pygame.mixer.Sound(f"{self.directory}\\{file}\\{audio}")
 
-			a.set_volume(0.5)
+			a.set_volume(1.0)
 
 			audio_dict[re.match(r"[^.]*", audio).group()] = a
 

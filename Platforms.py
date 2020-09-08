@@ -843,8 +843,6 @@ class Platforms():
 
 	def __init__(self):
 
-		self.font = pygame.font.Font("flappyfont.ttf", 16)
-
 		self.rectangles = Rectangles()
 
 	def platforms(self, level):
@@ -856,21 +854,6 @@ class Platforms():
 		except:
 
 			return []
-
-	def blitme(self, screen, level):
-#		pass
-		for platform in self.platforms(level):
-
-			toptext = self.font.render(str(platform.top), True, (0, 255, 0))
-			bottext = self.font.render(str(platform.bottom), True, (0, 255, 0))
-			righttext = self.font.render(str(platform.right), True, (0, 255, 0))
-			lefttext = self.font.render(str(platform.left), True, (0, 255, 0))
-			screen.blit(toptext, (platform.centerx, platform.top))
-			screen.blit(bottext, (platform.midbottom))
-			screen.blit(righttext, (platform.midright))
-			screen.blit(lefttext, (platform.midleft))
-			pygame.draw.line(screen, (255, 0, 0), platform.topright, platform.bottomleft, 1)
-			pygame.draw.rect(screen, (255, 0, 0), platform, 1)
 
 
 if __name__ == "__main__":

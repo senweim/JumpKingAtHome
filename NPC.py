@@ -43,7 +43,7 @@ class NPC:
 
 		self.audio = pygame.mixer.Sound("Audio\\Misc\\talking.wav")
 
-		self.channel = pygame.mixer.Channel(7)
+		self.channel = pygame.mixer.Channel(9)
 
 		self.text = ""
 
@@ -55,7 +55,9 @@ class NPC:
 
 		self.pause = 0
 
-		self.pause_interval = 100
+		self.pause_interval = 200
+
+		self.sleep_interval	= 800
 
 		self.interval = 10
 
@@ -82,7 +84,8 @@ class NPC:
 				screen.blit(text, (self.rect.x - text.get_width(), self.rect.y - (index)*text.get_height()))
 
 	def reset(self):
-		self.lines = iter(inspect.cleandoc(random.choice(self.quotes)))
+
+		self.line = iter(inspect.cleandoc(random.choice(self.quotes)))
 		self.blit_counter = 0
 		self.pause = 0
 		self.talking = False
@@ -390,7 +393,7 @@ class OldMan(NPC):
 								self.channel.play(self.audio)
 
 
-					if not self.blit_counter % self.interval * 2:
+					if not self.blit_counter % (self.interval * 2):
 
 						self.current_image = self.images["OldManTalk1"]
 
@@ -456,7 +459,7 @@ class OldMan(NPC):
 			self.active_counter += 1
 			self.blit_counter += 1
 
-			if self.active_counter > 250:
+			if self.active_counter > self.sleep_interval:
 
 				self.asleep = False
 				self.active = True
@@ -603,7 +606,7 @@ class Hermit(NPC):
 
 								self.channel.play(self.audio)
 
-					if not self.blit_counter % self.interval * 2:
+					if not self.blit_counter % (self.interval * 2):
 
 						self.current_image = self.images["HermitTalk1"]
 
@@ -651,7 +654,7 @@ class Hermit(NPC):
 			self.active_counter += 1
 			self.blit_counter += 1
 
-			if self.active_counter > 250:
+			if self.active_counter > self.sleep_interval:
 
 				self.asleep = False
 				self.active = True
@@ -776,7 +779,7 @@ class Skeleton(NPC):
 
 								self.channel.play(self.audio)
 
-					if not self.blit_counter % self.interval * 2:
+					if not self.blit_counter % (self.interval * 2):
 
 						self.current_image = self.images["SkeletonTalk1"]
 
@@ -815,7 +818,7 @@ class Skeleton(NPC):
 			self.active_counter += 1
 			self.blit_counter += 1
 
-			if self.active_counter > 250:
+			if self.active_counter > self.sleep_interval:
 
 				self.asleep = False
 				self.active = True

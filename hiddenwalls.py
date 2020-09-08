@@ -52,7 +52,7 @@ class HiddenWall:
 
 		self.fake.blit(self.image, (0, 0))
 
-		self.found_channel = pygame.mixer.Channel(5)
+		self.found_channel = pygame.mixer.Channel(6)
 
 		self.found_audio = pygame.mixer.Sound("Audio\\Misc\\new_location.wav")
 

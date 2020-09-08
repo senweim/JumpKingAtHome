@@ -21,11 +21,11 @@ class Ending_Animation:
 
 		self.stall_y = 220
 
-		self.channel = pygame.mixer.Channel(14)
+		self.channel = pygame.mixer.Channel(1)
 
 		self.ending_music = pygame.mixer.Sound("Audio\\Misc\\ending.wav")
 
-		self.end_image = pygame.image.load("imagecrown.png").convert()
+		self.end_image = pygame.image.load("images\\sheets\\imagecrown.png").convert()
 
 	def update(self, level, king, babe):
 
@@ -71,11 +71,11 @@ class Ending_Animation:
 				king_command = "LookUp"
 				babe_command = "WalkRight"
 
-			elif self.end_counter == 330:
+			elif 330 <= self.end_counter < 360:
 
 				king_command = "Crouch"
 
-			elif self.end_counter == 350:
+			elif self.end_counter == 360:
 
 				king_command = "Jump"
 
@@ -84,7 +84,7 @@ class Ending_Animation:
 				if king.y <= level.flyer.rect.bottom:
 
 					king.isWearingCrown = True
-					king.rect_y = level.flyer.rect.bottom + (king.rect_y - king.y - 3)
+					king.rect_y = level.flyer.rect.bottom + (king.y - king.rect_y - 7)
 					king_command = "Freeze"
 
 				if self.end_counter == 360:
@@ -126,12 +126,12 @@ class Ending_Animation:
 				king_command = "WalkRight"
 				king.update(king_command)
 
-			elif self.end_counter == 821:
+			elif self.end_counter <= 850:
 
 				self.scroll_screen(level, king)
 				king_command = "Crouch"
 
-			elif self.end_counter == 862:
+			elif self.end_counter == 851:
 
 				babe.channel.play(babe.audio["babe_jump"])
 

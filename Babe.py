@@ -21,8 +21,6 @@ class Babe(King):
 
 		self.screen = screen
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.sprites = Babe_Sprites().babe_images
 
 		self.levels = levels
@@ -51,23 +49,21 @@ class Babe(King):
 
 		self.walkCount = 0
 
-		self.x, self.y = 375 * self.scale, 113 * self.scale
+		self.x, self.y = 375, 113
 
-		self.width, self.height = 32 * self.scale, 32 * self.scale
+		self.width, self.height = 32, 32
 
-		self.rect_x, self.rect_y = self.x + self.scale, self.y + 7 * self.scale
+		self.rect_x, self.rect_y = self.x + 1, self.y + 7
 
-		self.rect_width, self.rect_height = self.width - 12 * self.scale, self.height - 8 * self.scale
-
-		#self.rect = pygame.Rect(self.x + self.scale, self.y + 7 * self.scale, self.width - 12 * self.scale, self.height - 8 * self.scale)
+		self.rect_width, self.rect_height = self.width - 12, self.height - 8
 
 		self.current_image = self.sprites["Babe_Stand1"]
 
 		# Particles
 
-		self.jump_particle = King_Particle("jump_particle.png", 5, 1, 32)
+		self.jump_particle = King_Particle("images\\particles\\jump_particle.png", 5, 1, 32)
 
-		self.snow_jump_particle = King_Particle("snow_jump_particle.png", 4, 3, 36)
+		self.snow_jump_particle = King_Particle("images\\particles\\snow_jump_particle.png", 4, 3, 36)
 
 		self.isJump = False
 
@@ -75,7 +71,7 @@ class Babe(King):
 
 		# Audio
 
-		self.channel = pygame.mixer.Channel(13)
+		self.channel = pygame.mixer.Channel(10)
 
 		self.audio = Babe_Audio().audio
 
@@ -85,7 +81,7 @@ class Babe(King):
 
 		self.speed, self.angle = 0, 0
 
-		self.maxSpeed = 11 * self.scale
+		self.maxSpeed = 11
 
 		self.walkAngles = {"right" : math.pi/2, "left" : -math.pi/2}
 
@@ -93,12 +89,12 @@ class Babe(King):
 
 		# Ending
 
-		self.ending_distance = 50 * self.scale
+		self.ending_distance = 50
 
 	def blitme(self):
 
-		self.x = self.rect.x - 6 * self.scale
-		self.y = self.rect.y - 9 * self.scale
+		self.x = self.rect.x - 6
+		self.y = self.rect.y - 9
 
 		if self.levels.current_level == self.level:
 
@@ -172,7 +168,7 @@ class Babe(King):
 
 			elif command == "Snatched":
 
-				self.rect_y += 999 * self.scale
+				self.rect_y += 999
 
 		else:
 
@@ -225,13 +221,13 @@ class Babe(King):
 
 	def _walk(self, direction):
 
-		self.speed = self.scale
+		self.speed = 1
 		self.angle = self.walkAngles[direction]
 		self.isWalk = True
 
 	def _jump(self):
 
-		speed = (2 + (self.timer.elapsed_time()*2) / 150) * self.scale
+		speed = (2 + (self.timer.elapsed_time()*2) / 150)
 		angle = 0
 
 		self.angle, self.speed = self.physics.add_vectors(self.angle, self.speed, angle, speed)

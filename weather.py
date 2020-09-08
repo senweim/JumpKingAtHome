@@ -14,8 +14,6 @@ class Weathers:
 
 	def __init__(self):
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.width, self.height = int(os.environ.get("screen_width")), int(os.environ.get("screen_height"))
 
 		self.wind_levels = [25, 26, 27, 28, 29, 30, 31]
@@ -39,8 +37,6 @@ class Weathers:
 			if re.search(r"^{weather}\d+".format(weather = weather), file):
 
 				frame = pygame.image.load(f"{self.directory}\\{file}")
-
-				frame = pygame.transform.scale(frame, (frame.get_width() * self.scale, frame.get_height() * self.scale))
 
 				frames.append(frame)
 
@@ -100,7 +96,7 @@ class Weathers:
 	def _load_mask(self, file):
 
 		mask = pygame.image.load(f"{self.directory}\\{file}")
-		mask = pygame.transform.scale(mask, (mask.get_width() * self.scale, mask.get_height() * self.scale))
+
 		mask = pygame.mask.from_surface(mask)
 
 		return mask
@@ -137,11 +133,14 @@ class Weather:
 
 				rect.x += rect.x // image.get_width() * rect.width
 
+			if rect.colliderect(screen.get_rect()):
+				screen.blit(image, rect)
 
-			screen.blit(image, rect)
-			screen.blit(image, rect.move(image.get_width(), 0))
-			screen.blit(image, rect.move(-image.get_width(), 0))
+			if rect.move(image.get_width(), 0).colliderect(screen.get_rect()):
+				screen.blit(image, rect.move(image.get_width(), 0))
 
+			if rect.move(-image.get_width(), 0).colliderect(screen.get_rect()):
+				screen.blit(image, rect.move(-image.get_width(), 0))
 
 		else:
 

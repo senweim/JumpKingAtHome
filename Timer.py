@@ -10,8 +10,6 @@ class Timer:
 
 	def __init__(self):
 
-		pygame.init()
-
 		self.start_time = None
 
 	def start(self):
@@ -20,7 +18,11 @@ class Timer:
 
 	def elapsed_time(self):
 
-		return pygame.time.get_ticks() - self.start_time
+		x = pygame.time.get_ticks() - self.start_time
+
+		self.start_time = pygame.time.get_ticks()
+
+		return x
 
 	def end(self):
 

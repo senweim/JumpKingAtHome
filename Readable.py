@@ -100,7 +100,7 @@ class Readable:
 
 		self.text = ""
 
-		self.channel = pygame.mixer.Channel(7)
+		self.channel = pygame.mixer.Channel(9)
 
 		self.channel_counter = 1
 

@@ -14,8 +14,6 @@ class Wind:
 
 		self.screen = screen
 
-		self.scale = int(os.environ.get("resolution"))
-
 		self.wind_var = 0
 
 		self.x, self.y, self.width, self.height = 0, 0, self.screen.get_width(), self.screen.get_height()
@@ -26,7 +24,7 @@ class Wind:
 	
 	def calculate_wind(self, king):
 
-		wind = math.sin(self.wind_var) * (2.5 * self.scale) ** 2
+		wind = math.sin(self.wind_var) * (2.5) ** 2
 
 		self.wind_var += math.pi / 500
 
