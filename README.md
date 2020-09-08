@@ -1,6 +1,6 @@
 # Jump King
- Jump King With Pygame
- Run the executable file to play
+ Jump King With Pygame.
+ Run JumpKing.exe to play
  ## Gameplay
   ![image](https://user-images.githubusercontent.com/67669987/92433021-c6033c80-f150-11ea-8b53-2936438f5dba.png)
   ![image](https://user-images.githubusercontent.com/67669987/92433069-de735700-f150-11ea-8a77-0895216d5892.png)
