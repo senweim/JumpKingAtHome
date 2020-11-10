@@ -17,6 +17,47 @@ from King_Sprites import King_Sprites
 from King_Particles import King_Particle
 from King_Audio import King_Audio
 
+# action list
+def get_action_dict(agentCommand):
+	keys = {}
+	if agentCommand == 0:
+		keys[pygame.K_SPACE] = 0
+		keys[pygame.K_RIGHT] = 1
+		keys[pygame.K_LEFT] = 0
+
+	elif agentCommand == 1:
+		keys[pygame.K_SPACE] = 0
+		keys[pygame.K_RIGHT] = 0
+		keys[pygame.K_LEFT] = 1
+
+	elif agentCommand == 2:
+		keys[pygame.K_SPACE] = 1
+		keys[pygame.K_RIGHT] = 1
+		keys[pygame.K_LEFT] = 0
+
+	elif agentCommand == 3:
+		keys[pygame.K_SPACE] = 1
+		keys[pygame.K_RIGHT] = 0
+		keys[pygame.K_LEFT] = 1
+
+	# elif agentCommand == 4:
+	# 	keys[pygame.K_SPACE] = 0
+	# 	keys[pygame.K_RIGHT] = 0
+	# 	keys[pygame.K_LEFT] = 0
+	#
+	# elif agentCommand == 5:
+	# 	keys[pygame.K_SPACE] = 1
+	# 	keys[pygame.K_RIGHT] = 0
+	# 	keys[pygame.K_LEFT] = 0
+
+	else:
+		print(agentCommand)
+		raise ValueError('Invalid action')
+
+	return keys
+
+
+
 class King():
 
 	""" represents the king """
@@ -129,7 +170,7 @@ class King():
 
 		self.idle_length = 200
 
-		self.splatDuration = 50
+		self.splatDuration = 0
 
 		self.current_image = self.sprites[self.direction]["King_Fell"]
 
@@ -199,13 +240,13 @@ class King():
 			self.snow_jump_particle.reset()
 
 
-	def update(self, command = None):
+	def update(self, command=None, agentCommand=None):
 
 		if os.environ.get("mode") == "normal":
 
 			if not self.isFalling and not self.levels.ending:
 
-				self._check_events()
+				self._check_events(agentCommand)
 
 			elif self.levels.ending:
 
@@ -275,9 +316,11 @@ class King():
 
 			self.isWalk = False
 
-	def _check_events(self):
-
-			keys = pygame.key.get_pressed()
+	def _check_events(self, agentCommand=None):
+			if agentCommand is not None:
+				keys = get_action_dict(agentCommand)
+			else:
+				keys = pygame.key.get_pressed()
 
 			if not self.isSplat or self.splatCount > self.splatDuration:
 
@@ -1113,7 +1156,8 @@ class King():
 
 		self.isContact = False
 
-		self.isSplat = True
+		# self.isSplat = True
+		self.isSplat = False
 
 		self.isDance = False
 

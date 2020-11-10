@@ -97,7 +97,6 @@ class Babe(King):
 		self.y = self.rect.y - 9
 
 		if self.levels.current_level == self.level:
-
 			self.screen.blit(self.current_image, (self.x, self.y))
 
 			# pygame.draw.rect(self.screen, (255, 0, 0), self.rect, 1)

@@ -202,7 +202,7 @@ class Levels:
 
 			print("BLIT2 ERROR: ", e)
 
-	def update_levels(self, king, babe):
+	def update_levels(self, king, babe, agentCommand=None):
 
 		self.update_wind(king)
 
@@ -224,7 +224,7 @@ class Levels:
 
 		else:
 
-			king.update()
+			king.update(agentCommand=agentCommand)
 
 			babe.update(king)
 
